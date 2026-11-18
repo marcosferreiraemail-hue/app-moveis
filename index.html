@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Móveis Sob Medida</title>
+<meta name="theme-color" content="#2f5d50">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+/* Layout: bancada de marceneiro. Coluna de edição à esquerda, desenho e lista de peças à direita; empilha no celular. */
+:root {
+  --bg: #f3f1ec; --surface: #ffffff; --ink: #1f2522; --muted: #5d6762; --line: #d9d5cb;
+  --accent: #2f5d50; --accent-ink: #ffffff; --mdf: #c9a878; --warn: #9a5b00; --warn-bg: #fff4e0;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-num: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161a18; --surface: #1f2421; --ink: #e8ece9; --muted: #a2aca6; --line: #343c38;
+    --accent: #6fb39f; --accent-ink: #0d1411; --mdf: #b8955f; --warn: #f0b45a; --warn-bg: #2e2412; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--font-ui); }
+header.top { background: var(--accent); color: var(--accent-ink); padding: 12px max(16px, env(safe-area-inset-left)) 12px max(16px, env(safe-area-inset-right)); padding-top: calc(12px + env(safe-area-inset-top)); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+header.top h1 { font-size: 18px; margin: 0; flex: 1 1 auto; letter-spacing: .2px; }
+header.top .proj { display: flex; gap: 8px; flex-wrap: wrap; }
+header.top input { background: rgba(255,255,255,.15); color: inherit; border: 1px solid rgba(255,255,255,.35); border-radius: 6px; padding: 6px 8px; font: inherit; min-width: 0; width: 180px; }
+header.top input::placeholder { color: inherit; opacity: .7; }
+main { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px; padding: 16px max(16px, env(safe-area-inset-left)) 32px max(16px, env(safe-area-inset-right)); max-width: 1400px; margin: 0 auto; }
+@media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+section.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+.col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); margin: 0 0 10px; }
+label { display: flex; flex-direction: column; gap: 3px; font-size: 13px; color: var(--muted); min-width: 0; }
+input, select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; width: 100%; min-width: 0; }
+input[type=number] { font-family: var(--font-num); }
+input[type=checkbox] { width: auto; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.check { flex-direction: row; align-items: center; gap: 6px; color: var(--ink); }
+button { font: inherit; border-radius: 6px; padding: 8px 12px; border: 1px solid var(--accent); background: var(--surface); color: var(--accent); cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.small { padding: 4px 8px; font-size: 13px; }
+button.danger { border-color: var(--line); color: var(--muted); }
+.mods { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.mod { display: flex; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; background: var(--bg); }
+.mod.sel { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.mod .n { flex: 1; min-width: 0; }
+.mod .dim { font-family: var(--font-num); font-size: 12px; color: var(--muted); }
+.hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
+#view { width: 100%; aspect-ratio: 4 / 3; max-height: 420px; background: var(--bg); border-radius: 8px; display: block; touch-action: none; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 10px; overflow-x: auto; }
+.tabs button { border: none; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--muted); padding: 8px 10px; white-space: nowrap; }
+.tabs button.on { color: var(--ink); border-bottom-color: var(--accent); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; font-size: 12px; }
+td.num { font-family: var(--font-num); text-align: right; font-variant-numeric: tabular-nums; }
+td.x { text-align: center; font-weight: 700; }
+tr.chapa td { background: var(--bg); font-weight: 600; }
+.warn { background: var(--warn-bg); color: var(--warn); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
+.warn ul { margin: 4px 0 0; padding-left: 18px; }
+.ok { color: var(--muted); font-size: 13px; }
+.labels { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.label { border: 1px dashed var(--line); border-radius: 6px; padding: 8px; font-size: 12px; }
+.label b { font-family: var(--font-num); font-size: 16px; display: block; }
+ol.steps { padding-left: 20px; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+#ar-overlay { position: fixed; inset: 0; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom)); color: #fff; font-size: 16px; }
+#ar-overlay .bar { pointer-events: auto; background: rgba(0,0,0,.6); border-radius: 10px; padding: 10px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+#ar-overlay .big { font-family: var(--font-num); font-size: 28px; flex: 1; }
+#ar-overlay button { background: #fff; color: #1f2522; border: none; }
+.foot { text-align: center; color: var(--muted); font-size: 12px; padding-bottom: 24px; }
+@media print { header.top, .no-print { display: none !important; } main { display: block; } section.card { border: none; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Móveis Sob Medida</h1>
+  <div class="proj">
+    <input id="cliente" placeholder="Nome do cliente" aria-label="Nome do cliente">
+    <input id="ambiente" placeholder="Ambiente (ex.: cozinha)" aria-label="Ambiente">
+  </div>
+</header>
+
+<main>
+  <div class="col">
+    <section class="card">
+      <h2>Medidas do vão</h2>
+      <div class="grid3">
+        <label>Largura (mm)<input id="vaoL" type="number" inputmode="numeric" min="0"></label>
+        <label>Altura (mm)<input id="vaoA" type="number" inputmode="numeric" min="0"></label>
+        <label>Profund. (mm)<input id="vaoP" type="number" inputmode="numeric" min="0"></label>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnAR" class="primary" hidden>Medir com a câmera</button>
+        <button id="btnEncaixar">Encaixar móvel no vão</button>
+      </div>
+      <p class="hint" id="arHint">Meça com a trena ou trena a laser. A câmera erra alguns centímetros: confira sempre antes de mandar cortar.</p>
+    </section>
+
+    <section class="card">
+      <h2>Móveis do projeto</h2>
+      <div class="mods" id="mods"></div>
+      <div class="row">
+        <select id="novoTipo" aria-label="Tipo de móvel" style="flex:1">
+          <option value="aereo">Armário aéreo</option>
+          <option value="balcao">Balcão de cozinha</option>
+          <option value="guardaRoupa">Guarda-roupa</option>
+        </select>
+        <button id="btnAdd">Adicionar</button>
+      </div>
+    </section>
+
+    <section class="card" id="editor">
+      <h2>Ajustar móvel</h2>
+      <div class="col" style="gap:10px">
+        <label>Nome<input id="m_nome"></label>
+        <div class="grid3">
+          <label>Largura<input id="m_L" type="number" inputmode="numeric"></label>
+          <label>Altura<input id="m_A" type="number" inputmode="numeric"></label>
+          <label>Profund.<input id="m_P" type="number" inputmode="numeric"></label>
+        </div>
+        <div class="grid3">
+          <label>Portas<input id="m_portas" type="number" min="0" max="6"></label>
+          <label>Prateleiras<input id="m_prateleiras" type="number" min="0" max="8"></label>
+          <label id="lblGav">Gavetas<input id="m_gavetas" type="number" min="0" max="4"></label>
+        </div>
+        <div class="grid2">
+          <label>Espessura
+            <select id="m_esp"><option value="15">15 mm</option><option value="18">18 mm</option></select>
+          </label>
+          <label>Cor do MDF<input id="m_cor" list="cores"></label>
+        </div>
+        <datalist id="cores">
+          <option value="MDF Branco TX"><option value="MDF Branco Diamante"><option value="MDF Preto TX">
+          <option value="MDF Carvalho"><option value="MDF Freijó"><option value="MDF Louro Freijó"><option value="MDF Cinza Grafite">
+        </datalist>
+        <label class="check"><input id="m_veio" type="checkbox"> MDF amadeirado (respeitar o veio: "não girar")</label>
+        <div class="row"><button id="btnDel" class="danger small">Remover este móvel</button></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card">
+      <h2 id="viewTitle">Desenho</h2>
+      <canvas id="view" aria-label="Desenho 3D do móvel"></canvas>
+      <p class="hint">Arraste para girar o desenho.</p>
+    </section>
+
+    <section class="card">
+      <div class="row no-print" style="justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0">Plano de corte</h2>
+        <div class="row">
+          <button id="btnXlsx" class="primary">Baixar planilha Cofel (.xlsx)</button>
+          <button id="btnCsv">CSV</button>
+        </div>
+      </div>
+      <div id="avisos"></div>
+      <div class="tabs no-print" role="tablist">
+        <button data-tab="pecas" class="on">Peças</button>
+        <button data-tab="ferragens">Ferragens</button>
+        <button data-tab="montagem">Montador</button>
+      </div>
+      <div id="tab_pecas"></div>
+      <div id="tab_ferragens" hidden></div>
+      <div id="tab_montagem" hidden></div>
+    </section>
+  </div>
+</main>
+<p class="foot">Medidas em milímetros. Planilha no modelo de importação da Cofel Laminados.</p>
+
+<div id="ar-overlay" hidden>
+  <div class="bar"><span id="arMsg">Aponte para a parede e toque no primeiro ponto.</span></div>
+  <div class="bar"><span class="big" id="arDist">—</span>
+    <button id="arUseL">Usar como largura</button>
+    <button id="arUseA">Usar como altura</button>
+    <button id="arUseP">Usar como profundidade</button>
+    <button id="arReset">Recomeçar</button>
+    <button id="arExit">Sair</button>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="engine.js"></script>
+<script src="ar.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
